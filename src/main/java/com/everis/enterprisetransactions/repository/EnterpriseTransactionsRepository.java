@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface EnterpriseTransactionsRepository extends ReactiveMongoRepository<EnterpriseTransactions, String> {
 
-    Mono<EnterpriseTransactions> findByRuc(String ruc);
+    Mono<EnterpriseTransactions> findByRucAndAccountNumber(String ruc, String accountNumber);
 }

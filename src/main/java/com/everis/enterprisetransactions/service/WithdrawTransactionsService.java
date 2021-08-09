@@ -30,29 +30,38 @@ public class WithdrawTransactionsService {
     }
 
     private Mono<TransactionResponse> sustractMoneyFromCurrentAccount(AccountTransaction transaction, String ruc) {
-        return repository.findByRuc(ruc)
-                .flatMap( c ->
-                        updateAccountBalance(transaction, c))
+        return repository.findByRucAndAccountNumber(ruc, transaction.getAccountNumber())
+                .flatMap( et ->
+                        updateAccountBalance(transaction, et, ruc))
                 .switchIfEmpty(
                         noBalanceFound(transaction)
                 );
     }
 
-    private Mono<TransactionResponse> updateAccountBalance(AccountTransaction transaction, EnterpriseTransactions et) {
+    //TODO falta aplicar el costo de la transaccion
+    private Mono<TransactionResponse> updateAccountBalance(AccountTransaction transaction, EnterpriseTransactions et, String ruc) {
         MathContext mc = new MathContext(2);
-        TransactionResponse response = new TransactionResponse();
-        Map<String, Object> bodyResponse = new HashMap<>();
         et.getTransactionList().add(transaction);
         et.setAccountBalance(et.getAccountBalance().subtract(transaction.getAmmount(), mc));
-        response.setMessage("Se actualizo el saldo de la cuenta");
-        bodyResponse.put("transaction", transaction);
-        response.setBody(bodyResponse);
-        response.setHttpStatus(HttpStatus.OK);
+        et.setAccountNumber(transaction.getAccountNumber());
+        et.setRuc(ruc);
+        TransactionResponse response = createOKResponse(transaction);
         return repository.save(et).flatMap(
                 t -> Mono.just(response)
         );
     }
 
+    private TransactionResponse createOKResponse(AccountTransaction transaction) {
+        TransactionResponse response = new TransactionResponse();
+        Map<String, Object> bodyResponse = new HashMap<>();
+        response.setMessage("Se actualizo el saldo de la cuenta");
+        bodyResponse.put("transaction", transaction);
+        response.setBody(bodyResponse);
+        response.setHttpStatus(HttpStatus.OK);
+        return response;
+    }
+
+    //Si no existe un registro la cuenta esta en 0
     private Mono<TransactionResponse> noBalanceFound(AccountTransaction transaction) {
         TransactionResponse response = new TransactionResponse();
         Map<String, Object> bodyResponse = new HashMap<>();

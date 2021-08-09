@@ -20,5 +20,6 @@ public class EnterpriseTransactions {
     private Date createdAt;
     private Date modifiedAt;
     private BigDecimal accountBalance;
+    private String accountNumber;
     private ArrayList<AccountTransaction> transactionList;
 }

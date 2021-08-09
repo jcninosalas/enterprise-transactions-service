@@ -12,5 +12,6 @@ public class AccountTransaction {
 
     private BigDecimal ammount;
     private Date createdAt;
+    private String accountNumber;
     private TransactionType transactionType;
 }

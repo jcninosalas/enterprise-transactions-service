@@ -2,6 +2,7 @@ package com.everis.enterprisetransactions.controller;
 
 import com.everis.enterprisetransactions.model.AccountTransaction;
 import com.everis.enterprisetransactions.model.TransactionResponse;
+import com.everis.enterprisetransactions.service.DepositTransactionsService;
 import com.everis.enterprisetransactions.service.WithdrawTransactionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +15,22 @@ import reactor.core.publisher.Mono;
 public class AccountTransactionsController {
 
     @Autowired
-    private WithdrawTransactionsService service;
+    private WithdrawTransactionsService withdrawService;
 
-    @PostMapping("/e-customer/transaction")
-    public Mono<TransactionResponse> newTransation(@RequestBody AccountTransaction transaction, @RequestParam String ruc) {
-        return service.createNewTransaction(transaction, ruc);
+    @Autowired
+    private DepositTransactionsService depositService;
+
+    @PostMapping("/e-transaction/withdraw")
+    public Mono<TransactionResponse> withdrawTransaction(
+            @RequestBody AccountTransaction transaction,
+            @RequestParam String ruc) {
+        return withdrawService.createNewTransaction(transaction, ruc);
+    }
+
+    @PostMapping("/e-transaction/deposit")
+    public Mono<TransactionResponse> depositTransation(
+            @RequestBody AccountTransaction transaction,
+            @RequestParam String ruc) {
+        return depositService.createNewTransaction(transaction, ruc);
     }
 }
