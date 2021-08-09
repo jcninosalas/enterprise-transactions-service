@@ -1,14 +1,13 @@
 package com.everis.enterprisetransactions.controller;
 
 import com.everis.enterprisetransactions.model.AccountTransaction;
+import com.everis.enterprisetransactions.model.EnterpriseTransactions;
 import com.everis.enterprisetransactions.model.TransactionResponse;
 import com.everis.enterprisetransactions.service.DepositTransactionsService;
 import com.everis.enterprisetransactions.service.WithdrawTransactionsService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -32,5 +31,10 @@ public class AccountTransactionsController {
             @RequestBody AccountTransaction transaction,
             @RequestParam String ruc) {
         return depositService.createNewTransaction(transaction, ruc);
+    }
+
+    @GetMapping("/e-transaction/getall")
+    public Mono<EnterpriseTransactions> getAllTransactions(String ruc, String accountNumber) {
+        return depositService.getAllTransactions(ruc, accountNumber);
     }
 }

@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 
 import java.math.MathContext;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,9 @@ public class WithdrawTransactionsService {
 
     //TODO falta aplicar el costo de la transaccion
     private Mono<TransactionResponse> updateAccountBalance(AccountTransaction transaction, EnterpriseTransactions et, String ruc) {
+        if (et.getAccountBalance().compareTo(transaction.getAmmount()) < 0) return noBalanceFound(transaction);
         MathContext mc = new MathContext(2);
+        transaction.setCreatedAt(new Date());
         et.getTransactionList().add(transaction);
         et.setAccountBalance(et.getAccountBalance().subtract(transaction.getAmmount(), mc));
         et.setAccountNumber(transaction.getAccountNumber());
@@ -65,7 +68,7 @@ public class WithdrawTransactionsService {
     private Mono<TransactionResponse> noBalanceFound(AccountTransaction transaction) {
         TransactionResponse response = new TransactionResponse();
         Map<String, Object> bodyResponse = new HashMap<>();
-        response.setMessage("La cuenta no tiene fondos");
+        response.setMessage("La cuenta no tiene fondos suficientes");
         response.setHttpStatus(HttpStatus.BAD_REQUEST);
         bodyResponse.put("refusedTransaction", transaction);
         response.setBody(bodyResponse);

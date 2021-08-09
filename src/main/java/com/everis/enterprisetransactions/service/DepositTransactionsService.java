@@ -82,4 +82,8 @@ public class DepositTransactionsService {
         eTransactions.setRuc(ruc);
         return eTransactions;
     }
+
+    public Mono<EnterpriseTransactions> getAllTransactions(String ruc, String accountNumber) {
+        return repository.findByRucAndAccountNumber(ruc, accountNumber);
+    }
 }
